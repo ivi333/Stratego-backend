@@ -7,14 +7,14 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.esotericsoftware</groupId>
-    <artifactId>java-gaming-backend</artifactId>
+    <groupId>de.arvato</groupId>
+    <artifactId>stratego-backend</artifactId>
     <version>2.22.0-RC1</version>
     <packaging>jar</packaging>
 
-    <name>kryonet</name>
-    <description>TCP and UDP client/server library for Java</description>
-    <url>https://github.com/EsotericSoftware/kryonet</url>
+    <name>Stratego Backend</name>
+    <description>Backend for Stratego Game</description>
+    <url>https://github.com/ivi333/Stratego-backend</url>
 
     <licenses>
         <license>
@@ -30,6 +30,11 @@
             <name>Nathan Sweet</name>
             <email>nathan.sweet@gmail.com</email>
         </developer>
+        <developer>
+            <id>gome016</id>
+            <name>Ivan Gomez</name>
+            <email>gomezl.ivan@gmail.com</email>
+        </developer>		
     </developers>
 
     <scm>
@@ -47,11 +52,6 @@
     </build>
 
     <dependencies>
-<!--         <dependency> -->
-<!--             <groupId>com.esotericsoftware.kryo</groupId> -->
-<!--             <artifactId>kryo</artifactId> -->
-<!--             <version>2.24.0</version> -->
-<!--         </dependency> -->
 		<dependency>
 		  <groupId>com.esotericsoftware</groupId>
 		  <artifactId>kryo</artifactId>

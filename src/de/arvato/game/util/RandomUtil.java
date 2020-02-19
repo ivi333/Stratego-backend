@@ -30,13 +30,19 @@ public class RandomUtil {
 	public static final int BOM_MAX = 6;
 	public static final int BAN_MAX = 1;
 	
-	public static Piece [] distributePiecesRandon () {
+	private static final Random rng = new Random();
+	
+	public static Piece [] distributePiecesRandon (final int player) {
 		List<Coordinate> coordinates = new ArrayList<Coordinate>();
-		Random rng = new Random(); 
 		Set<Integer> generated = new LinkedHashSet<Integer>();
 		while (generated.size() < MAX_PIECES)
 		{
-			Integer next = rng.nextInt(MAX_PIECES);
+			Integer next;
+			if (player == 1) {
+				next = rng.nextInt(MAX_PIECES);
+			} else {
+				next = randomBetween(60, 100);
+			}
 			generated.add(next);
 		}
 		Iterator<Integer> it = generated.iterator();
@@ -72,11 +78,15 @@ public class RandomUtil {
 		Piece [] res = new Piece[MAX_PIECES];
 		for (Map.Entry<PieceEnum, Integer> entry : mapBoard.entrySet()) {
 			for (int j=0;j<entry.getValue();j++) {
-				Piece mock = new Piece(-1, entry.getKey());
+				Piece mock = new Piece(player, entry.getKey());
 				mock.jumpTo(coordinates.get(pos).x, coordinates.get(pos).y);
 				res[pos++] = mock;
 			}
 		}
 		return res;
+	}
+	
+	public static int randomBetween (int low, int high) {
+		return rng.nextInt(high-low) + low;		
 	}
 }

@@ -16,13 +16,6 @@ public class Piece {
 		this.name = name;
 	}
 
-	public Piece (final int player, PieceEnum name, int x, int y) {
-		this.x=-1;
-		this.y=-1;	
-		this.player = player;
-		this.name = name;
-	}
-
 	public void jumpTo (final int x1, final int y1) {
 		this.x = x1;
 		this.y = y1;
@@ -45,6 +38,21 @@ public class Piece {
 			default:
 				return;
 		}
+	}
+
+	public boolean samePlayer (Piece p) {
+		return this.player == p.player;
+	}
+	
+	public boolean isForbidden () {
+		return this.name == PieceEnum.FORBIDDEN;
+	}
+	
+	public boolean isMoveAllowed () {
+		boolean b = 
+				this.name.equals(PieceEnum.BOMBA) ||
+ 				this.name.equals(PieceEnum.BANDERA);
+		return !isForbidden() && !b;
 	}
 	
 	static Piece createForbidden () {
