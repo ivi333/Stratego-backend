@@ -1,7 +1,13 @@
 
 package de.arvato.game;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.serializers.CollectionSerializer;
+import com.esotericsoftware.kryo.serializers.DeflateSerializer;
+import com.esotericsoftware.kryo.serializers.FieldSerializer;
 import com.esotericsoftware.kryonet.EndPoint;
 
 // This class is a convenient place to keep things common to both the client and server.
@@ -14,6 +20,13 @@ public class Network {
 		kryo.register(RegisterName.class);
 		kryo.register(String[].class);
 		kryo.register(UpdateNames.class);
+		kryo.register(GameMovePiece.class);
+//		kryo.register(short[].class);
+//		kryo.register(SomeData.class, new DeflateSerializer(new FieldSerializer(kryo, SomeData.class)));
+		kryo.register(PieceEnum.class);
+		kryo.register(GameInitBoard.class);
+		kryo.register(Piece.class);
+		kryo.register(ArrayList.class, new CollectionSerializer());
 		kryo.register(ServerTalk.class);
 	}
 
@@ -28,15 +41,22 @@ public class Network {
 	static public class ServerTalk {
 		final static String PLAYERS_CONNECTED = "PC";
 		final static String PLAYER_DISCONNECTED = "PD";
+		final static String START_GAME = "SG";
+		final static String YOUR_TURN = "YT";
+		final static String ROOM_READY = "RR";
 		public String text;
 	}
 	
-	static public class GamePrepareBoard {
-		
+	static public class GameInitBoard {
+		public List<Piece> pieces;
 	}
 	
-	static public class GamePrepareMovement {
-		
+	static public class GameMovePiece {
+		public int p1x;
+		public int p1y;
+		public int p2x;
+		public int p2y;
+		public boolean p1kill;
+		public boolean p2kill;
 	}
-
 }

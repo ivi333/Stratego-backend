@@ -1,6 +1,7 @@
 package de.arvato.game;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 
 import com.esotericsoftware.kryonet.Client;
@@ -8,8 +9,10 @@ import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.minlog.Log;
 
-import de.arvato.game.Network.ServerTalk;
+import de.arvato.game.GameServer.GameConnection;
+import de.arvato.game.Network.GameInitBoard;
 import de.arvato.game.Network.RegisterName;
+import de.arvato.game.Network.ServerTalk;
 
 public class GameClient {
 
@@ -29,40 +32,46 @@ public class GameClient {
 		client.addListener(new Listener() {
 			
 			public void connected (Connection connection) {
-				System.out.println("GameClient connected:" + connection.toString());
+				//set big timout for debugging
+				if (Log.DEBUG)
+					connection.setTimeout(120000);
+				Log.debug("GameClient connected ID:" + connection.getID());
 				RegisterName registerName = new RegisterName();
 				name = "Ivan-" + new Date();
 				registerName.name = name;
-				client.sendTCP(registerName);
+				Log.debug("Client sends registerName:" + registerName.name);
+				client.sendTCP(registerName);				
 			}
 
-			public void received (Connection connection, Object object) {
-				System.out.println("GameClient received:" + connection.toString());
-				
+			public void received (Connection c, Object object) {
 				if (object instanceof ServerTalk) {
-					ServerTalk chatMessage = (ServerTalk)object;
-					System.out.println("Got:" + chatMessage.text);
+					ServerTalk serverTalk = (ServerTalk)object;
+					Log.debug("Client Got ServerTalk:" + serverTalk.text);
+					//rom is ready lets init the GameBoard
+					/*if (ServerTalk.ROOM_READY.equals(serverTalk.text)) {						
+						GameInitBoard gib = new GameInitBoard();
+						gib.pieces = new ArrayList<Piece>();
+						Piece pn = new Piece();
+						pn.name = PieceEnum.SARGENTO;
+						pn.x=3;
+						pn.y=4;
+						gib.pieces.add(pn);
+						Log.debug("Client sends GameInitBoard:" + connection.name);
+						client.sendTCP(gib);
+					}*/
 					
-					ServerTalk clientMessage = new ServerTalk();
-					clientMessage.text="Hello from client:" + connection.getID();
-					client.sendTCP(clientMessage);
+//					ServerTalk clientMessage = new ServerTalk();
+//					clientMessage.text="Hello from client:" + connection.getID();
+//					client.sendTCP(clientMessage);
+				} else if (object instanceof GameInitBoard) {					
+					//Opponent has init the board
+					GameInitBoard gameBoard = (GameInitBoard) object;					
+					Log.debug("Client Init Board. Got pieces:" + gameBoard.pieces.size());					
 				}
-				
-//				if (object instanceof UpdateNames) {
-//					UpdateNames updateNames = (UpdateNames)object;
-//					chatFrame.setNames(updateNames.names);
-//					return;
-//				}
-//
-//				if (object instanceof ChatMessage) {
-//					ChatMessage chatMessage = (ChatMessage)object;
-//					chatFrame.addMessage(chatMessage.text);
-//					return;
-//				}
 			}
 
 			public void disconnected (Connection connection) {
-				System.out.println("GameClient disconected:" + connection.toString());
+				Log.debug("GameClient disconected:" + connection.toString());
 			}
 		});
 		
@@ -77,7 +86,6 @@ public class GameClient {
 				}
 			}
 		}.start();
-
 	}
 
 	public static void main (String[] args) throws Exception{

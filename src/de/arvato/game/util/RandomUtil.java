@@ -32,7 +32,7 @@ public class RandomUtil {
 	
 	private static final Random rng = new Random();
 	
-	public static Piece [] distributePiecesRandon (final int player) {
+	public static Piece [] distributePiecesRandom (final int player) {
 		List<Coordinate> coordinates = new ArrayList<Coordinate>();
 		Set<Integer> generated = new LinkedHashSet<Integer>();
 		while (generated.size() < MAX_PIECES)

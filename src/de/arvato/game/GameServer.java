@@ -3,20 +3,27 @@ package de.arvato.game;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
 import com.esotericsoftware.minlog.Log;
 
-import de.arvato.game.Network.ServerTalk;
 import de.arvato.game.Network.RegisterName;
+import de.arvato.game.Network.ServerTalk;
 
 public class GameServer extends AbstractGameServer {
 
 	int numberPlayers;
 	List<GameConnection> playerList;
 	int gameRoom;
+
+	//TODO how to shutdown
+	ScheduledExecutorService scheduledExecutorService =
+			Executors.newScheduledThreadPool(20);
+
 	
 	public GameServer () throws IOException {
 		numberPlayers=0;
@@ -37,12 +44,12 @@ public class GameServer extends AbstractGameServer {
 		server.addListener(new Listener() {
 			@Override
 			public void connected(Connection connection) {
-				System.out.println("SERVER connected:" + connection.toString());
+				Log.debug("SERVER connected:" + connection.toString());
 			}
 
 			@Override
 			public void disconnected(Connection connection) {
-				System.out.println("SERVER disconnected:" + connection.toString());
+				Log.debug("SERVER disconnected:" + connection.toString());
 			}
 
 			@Override
@@ -60,24 +67,17 @@ public class GameServer extends AbstractGameServer {
 					if (name.length() == 0) return;
 					// Store the name on the connection.
 					connection.name = name;
-					// Send a "connected" message to everyone except the new client.
-//					ChatMessage chatMessage = new ChatMessage();
-//					chatMessage.text = name + " connected.";
-//					server.sendToAllExceptTCP(connection.getID(), chatMessage);
-					
-					// Send everyone a new list of connection names.
-//					updateNames();
-
 					newGame (connection);
-					
 					return;
-				}
-				
-				if (object instanceof ServerTalk) {
+				} /*else if (object instanceof ServerTalk) {
 					if (connection.name == null) return;
 					ServerTalk chatMessage = (ServerTalk)object;
 					System.out.println("Game Server Got:" + chatMessage.text);
-				}
+				} else if (object instanceof GameInitBoard) {
+					if (connection.name == null) return;
+					GameInitBoard gib = (GameInitBoard) object;
+					System.out.println("Game Board got:" + gib.toString());
+				} */
 			}
 			
 		});
@@ -90,19 +90,15 @@ public class GameServer extends AbstractGameServer {
 	public synchronized void newGame (GameConnection connection) {
 		playerList.add(connection);
 		numberPlayers++;
-		System.out.println("newGame number of players:" + numberPlayers);
+		Log.debug("newGame number of players:" + numberPlayers);
 		if (numberPlayers == 2) {
 			// new Game. Create new Thread for each GameRoom?
-			new GameRoom(playerList.get(0), playerList.get(1), gameRoom++);
-			
+			new GameRoom(scheduledExecutorService, playerList.get(0), playerList.get(1), gameRoom++);
 			ServerTalk message = new ServerTalk();
 			message.text ="Players are connected";
-			
 //			server.sendToTCP(playerList.get(0).getID(), message);
 //			server.sendToTCP(playerList.get(1).getID(), message);
-
 			this.sendPlayersConnected(playerList.get(0).getID(), playerList.get(1).getID());
-			
 			// Clear waiting list
 			playerList.clear();
 			numberPlayers=0;
@@ -118,5 +114,4 @@ public class GameServer extends AbstractGameServer {
 	public static void main (String[] args) throws IOException {
 		new GameServer();
 	}
-
 }
