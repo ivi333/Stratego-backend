@@ -9,7 +9,7 @@ public class GameTest {
 
 	public static void main (String args[]) throws Exception {
 		Log.set(Log.LEVEL_DEBUG);
-		final int threads = 2;
+		final int threads = 200;
 
 		for (int i = 0; i < threads; i++) {
 			new Thread() {

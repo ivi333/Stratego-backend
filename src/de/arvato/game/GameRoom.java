@@ -36,9 +36,8 @@ public class GameRoom {
 	//identify the room
 	private int idRoom;
 	
-	private ScheduledExecutorService scheduledExecutorService;
 	
-	public GameRoom (ScheduledExecutorService scheduledExecutorService, final GameConnection player1GameCon, final GameConnection player2GameCon, final int idRoom) {
+	public GameRoom (final GameConnection player1GameCon, final GameConnection player2GameCon, final int idRoom) {
 		this.player1=player1GameCon;
 		this.player2=player2GameCon;
 		
@@ -54,8 +53,6 @@ public class GameRoom {
 		this.idRoom = idRoom;
 		
 		this.board = new Board();
-		
-		this.scheduledExecutorService = scheduledExecutorService;
 		
 		roomReady (this.player1);
 		roomReady (this.player2);
@@ -114,9 +111,9 @@ public class GameRoom {
 				if (player1Ready && player2Ready) {
 					Log.debug("Server player1Ready and player2Ready");
 					if (player1Con) {
-						changeTurnDelay(currentPlayerConnection);
+						changeTurn(currentPlayerConnection);
 					} else {
-						changeTurnDelay(otherPlayerConnection);
+						changeTurn(otherPlayerConnection);
 					}
 				}
 				
@@ -124,7 +121,7 @@ public class GameRoom {
 				GameMovePiece movePiece = (GameMovePiece) object;
 				board.requestMovement(movePiece);
 				otherPlayerConnection.sendTCP(movePiece);
-				changeTurnDelay(otherPlayerConnection);
+				changeTurn(otherPlayerConnection);
 			}
 		}
 		
@@ -137,7 +134,14 @@ public class GameRoom {
 		}
 	}
 	
-	public void changeTurnDelay (Connection con) {
+	public void changeTurn (Connection con) {
+		Log.debug("Changing turn on thread: {}", Thread.currentThread().getName());
+		ServerTalk serverTalk = new ServerTalk();
+		serverTalk.text = ServerTalk.YOUR_TURN;
+		con.sendTCP(serverTalk);
+	}
+	
+	/*public void changeTurnDelay (Connection con) {
 		ScheduledFuture schedule = scheduledExecutorService.schedule(new Runnable () {
 			@Override
 			public void run() {
@@ -156,7 +160,7 @@ public class GameRoom {
 			e.printStackTrace();
 			Log.error(e.getMessage(), e);
 		}
-	}
+	}*/
 	
 	public void roomReady (Connection con) {
 		ServerTalk serverTalk = new ServerTalk();

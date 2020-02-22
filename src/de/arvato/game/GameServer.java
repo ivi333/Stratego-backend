@@ -21,8 +21,8 @@ public class GameServer extends AbstractGameServer {
 	int gameRoom;
 
 	//TODO how to shutdown
-	ScheduledExecutorService scheduledExecutorService =
-			Executors.newScheduledThreadPool(20);
+//	ScheduledExecutorService scheduledExecutorService =
+//			Executors.newScheduledThreadPool(50);
 
 	
 	public GameServer () throws IOException {
@@ -93,7 +93,7 @@ public class GameServer extends AbstractGameServer {
 		Log.debug("newGame number of players:" + numberPlayers);
 		if (numberPlayers == 2) {
 			// new Game. Create new Thread for each GameRoom?
-			new GameRoom(scheduledExecutorService, playerList.get(0), playerList.get(1), gameRoom++);
+			new GameRoom(playerList.get(0), playerList.get(1), gameRoom++);
 			ServerTalk message = new ServerTalk();
 			message.text ="Players are connected";
 //			server.sendToTCP(playerList.get(0).getID(), message);
@@ -112,6 +112,7 @@ public class GameServer extends AbstractGameServer {
 	}
 
 	public static void main (String[] args) throws IOException {
+		Log.set(Log.LEVEL_INFO);
 		new GameServer();
 	}
 }
