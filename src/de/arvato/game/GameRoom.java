@@ -41,7 +41,7 @@ public class GameRoom {
 		this.player1=player1GameCon;
 		this.player2=player2GameCon;
 		
-		Log.info("Creating Game Room with:" + this.player1.name + " - " + this.player2.name);
+		Log.info("Creating Game Room with:" + this.player1.name + " - " + this.player2.name + " Thread:" + Thread.currentThread().getName());
 		
 		GameRoomListener listenerPlayer1 = new GameRoomListener(player2);
 		GameRoomListener listenerPlayer2 = new GameRoomListener(player1);

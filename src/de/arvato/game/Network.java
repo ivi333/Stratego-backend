@@ -12,6 +12,7 @@ import com.esotericsoftware.kryonet.EndPoint;
 
 // This class is a convenient place to keep things common to both the client and server.
 public class Network {
+	static public final String host = "localhost";
 	static public final int port = 54555;
 
 	// This registers objects that are going to be sent over the network.
@@ -39,11 +40,11 @@ public class Network {
 	}
 
 	static public class ServerTalk {
-		final static String PLAYERS_CONNECTED = "PC";
-		final static String PLAYER_DISCONNECTED = "PD";
-		final static String START_GAME = "SG";
-		final static String YOUR_TURN = "YT";
-		final static String ROOM_READY = "RR";
+		public final static String PLAYERS_CONNECTED = "PC";
+		public final static String PLAYER_DISCONNECTED = "PD";
+		public final static String START_GAME = "SG";
+		public final static String YOUR_TURN = "YT";
+		public final static String ROOM_READY = "RR";
 		public String text;
 	}
 	

@@ -3,8 +3,6 @@ package de.arvato.game;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
@@ -29,7 +27,7 @@ public class GameServer extends AbstractGameServer {
 		numberPlayers=0;
 		gameRoom=0;
 		playerList = new ArrayList<GameConnection>();
-		this.server = new Server() {
+		this.server = new Server(16384, 8192) {
 			protected Connection newConnection () {
 				// By providing our own connection implementation, we can store per
 				// connection state without a connection ID to state look up.
@@ -45,6 +43,7 @@ public class GameServer extends AbstractGameServer {
 			@Override
 			public void connected(Connection connection) {
 				Log.debug("SERVER connected:" + connection.toString());
+				Log.info("Clients connected:" + server.getConnections().length);
 			}
 
 			@Override
@@ -93,12 +92,23 @@ public class GameServer extends AbstractGameServer {
 		Log.debug("newGame number of players:" + numberPlayers);
 		if (numberPlayers == 2) {
 			// new Game. Create new Thread for each GameRoom?
-			new GameRoom(playerList.get(0), playerList.get(1), gameRoom++);
+			
+			final GameConnection gcp1 = playerList.get(0);
+			final GameConnection gcp2 = playerList.get(1);
+			
+//			new Thread("GameRoom-"+gameRoom) {
+//				public void run () {
+//					new GameRoom(gcp1, gcp2, gameRoom++);
+//				}
+//			}.start();
+			
+			new GameRoom(gcp1, gcp2, gameRoom++);
+			
 			ServerTalk message = new ServerTalk();
 			message.text ="Players are connected";
 //			server.sendToTCP(playerList.get(0).getID(), message);
 //			server.sendToTCP(playerList.get(1).getID(), message);
-			this.sendPlayersConnected(playerList.get(0).getID(), playerList.get(1).getID());
+			this.sendPlayersConnected(gcp1.getID(), gcp2.getID());
 			// Clear waiting list
 			playerList.clear();
 			numberPlayers=0;
@@ -112,7 +122,6 @@ public class GameServer extends AbstractGameServer {
 	}
 
 	public static void main (String[] args) throws IOException {
-		Log.set(Log.LEVEL_INFO);
 		new GameServer();
 	}
 }

@@ -8,7 +8,7 @@ import de.arvato.game.Network.ServerTalk;
 public abstract class AbstractGameServer {
 
 	public AbstractGameServer () {
-		Log.set(Log.LEVEL_DEBUG);
+		Log.set(Log.LEVEL_INFO);
 	}
 	
 	protected Server server;

@@ -23,7 +23,7 @@ public class GameClient {
 
 
 	public GameClient () {
-		client = new Client();
+		client = new Client(16384, 8192);
 		client.start();
 
 		// For consistency, the classes to be sent over the network are
@@ -36,7 +36,7 @@ public class GameClient {
 				//set big timeout for debugging
 				if (Log.DEBUG)
 					connection.setTimeout(120000);
-				Log.debug("GameClient connected ID:" + connection.getID());
+				Log.info("GameClient connected ID:" + connection.getID());
 				RegisterName registerName = new RegisterName();
 				name = "Ivan-" + new Date();
 				registerName.name = name;
@@ -70,7 +70,7 @@ public class GameClient {
 						movePiece.p2y=6;
 						Log.debug("Client sends GameMovePiece:" + c.getID());
 						try {
-							Thread.sleep(1000);
+							Thread.sleep(100);
 						} catch (InterruptedException e) {
 							e.printStackTrace();
 						}
@@ -94,7 +94,7 @@ public class GameClient {
 		new Thread("Connect") {
 			public void run () {
 				try {
-					client.connect(5000, host, Network.port);
+					client.connect(10000, host, Network.port);
 					// Server communication after connection can go here, or in Listener#connected().
 				} catch (IOException ex) {
 					ex.printStackTrace();
@@ -105,7 +105,7 @@ public class GameClient {
 	}
 
 	public static void main (String[] args) throws Exception{
-		Log.set(Log.LEVEL_DEBUG);
+		Log.set(Log.LEVEL_INFO);
 		new GameClient();
 		while (true) {}
 	}
